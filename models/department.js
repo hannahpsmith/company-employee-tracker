@@ -1,13 +1,14 @@
 const { getAll, addItem } = require('../queries/queries');
 
-class Department {
-    static getAllDepartments() {
-        return getAll('department');
-    }
+const getAllDepartments = () => {
+    return getAll('department');
+};
 
-    static addDepartment(name) {
-        return addItem('department', ['name'], [name]);
-    }
-}
+const addDepartment = (name) => {
+    return addItem('department', ['name'], [name]);
+};
 
-module.exports = Department;
+module.exports = {
+    getAllDepartments,
+    addDepartment
+};
