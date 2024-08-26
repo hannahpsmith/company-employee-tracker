@@ -1,8 +1,9 @@
 const inquirer = require('inquirer');
 const db = require('./config/db');
-const Department = require('./models/department');
-const Employee = require('./models/employee');
-const Role = require('./models/role');
+const { getAllDepartments, addDepartment } = require('./models/department');
+const { getAllEmployees, addEmployee, updateEmployeeRole } = require('./models/employee');
+const { getAllRoles, addRole } = require('./models/role');
+
 
 const startApp = async () => {
     try {
@@ -35,17 +36,17 @@ const startApp = async () => {
 
         switch (answers.action) {
             case 'View all departments':
-                const departments = await Department.getAllDepartments();
+                const departments = await getAllDepartments();
                 console.table(departments);
                 break;
 
             case 'View all roles':
-                const roles = await Role.getAllRoles();
+                const roles = await getAllRoles();
                 console.table(roles);
                 break;
 
             case 'View all employees':
-                const employees = await Employee.getAllEmployees();
+                const employees = await getAllEmployees();
                 console.table(employees);
                 break;
 
@@ -53,7 +54,7 @@ const startApp = async () => {
                 const { departmentName } = await inquirer.prompt([
                     { type: 'input', name: 'departmentName', message: 'Enter the name of the department:' }
                 ]);
-                await Department.addDepartment(departmentName);
+                await addDepartment(departmentName);
                 console.log('Department added.');
                 break;
 
@@ -63,7 +64,7 @@ const startApp = async () => {
                     { type: 'number', name: 'roleSalary', message: 'Enter the salary:' },
                     { type: 'number', name: 'roleDepartmentId', message: 'Enter the department ID:' }
                 ]);
-                await Role.addRole(roleTitle, roleSalary, roleDepartmentId);
+                await addRole(roleTitle, roleSalary, roleDepartmentId);
                 console.log('Role added.');
                 break;
 
@@ -74,7 +75,7 @@ const startApp = async () => {
                     { type: 'number', name: 'roleId', message: 'Enter the role ID:' },
                     { type: 'number', name: 'managerId', message: 'Enter the manager’s ID (if any):', default: null }
                 ]);
-                await Employee.addEmployee(firstName, lastName, roleId, managerId);
+                await addEmployee(firstName, lastName, roleId, managerId);
                 console.log('Employee added.');
                 break;
 
@@ -83,7 +84,7 @@ const startApp = async () => {
                     { type: 'number', name: 'employeeId', message: 'Enter the ID of the employee to update:' },
                     { type: 'number', name: 'newRoleId', message: 'Enter the new role ID:' }
                 ]);
-                await Employee.updateEmployeeRole(employeeId, newRoleId);
+                await updateEmployeeRole(employeeId, newRoleId);
                 console.log('Employee role updated.');
                 break;
         }
