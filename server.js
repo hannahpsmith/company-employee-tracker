@@ -1,10 +1,80 @@
+require('dotenv').config();
+const { Pool } = require('pg');
 const inquirer = require('inquirer');
 const db = require('./config/db');
 const { getAllDepartments, addDepartment } = require('./models/department');
 const { getAllEmployees, addEmployee, updateEmployeeRole } = require('./models/employee');
 const { getAllRoles, addRole } = require('./models/role');
 
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: 'localhost',
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+});
 
+const initializeDatabase = async () => {
+    const client = await pool.connect();
+    try {
+        // Create database if it doesn't exist
+        await client.query(`CREATE DATABASE ${process.env.DB_NAME}`);
+        console.log('Database created.');
+    } catch (error) {
+        if (error.code === '42P04') { // Database already exists
+            console.log('Database already exists.');
+        } else {
+            console.error('Error creating database:', error);
+            throw error;
+        }
+    } finally {
+        client.release();
+    }
+
+    // Connect to the newly created database
+    const dbPool = new Pool({
+        user: process.env.DB_USER,
+        host: 'localhost',
+        database: process.env.DB_NAME,
+        password: process.env.DB_PASSWORD,
+        port: process.env.DB_PORT,
+    });
+
+    const dbClient = await dbPool.connect();
+    try {
+        // Create tables
+        await dbClient.query(`
+            CREATE TABLE IF NOT EXISTS department (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(30) UNIQUE NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS role (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(30) UNIQUE NOT NULL,
+                salary DECIMAL NOT NULL,
+                department_id INTEGER NOT NULL,
+                FOREIGN KEY (department_id) REFERENCES department(id)
+            );
+            CREATE TABLE IF NOT EXISTS employee (
+                id SERIAL PRIMARY KEY,
+                first_name VARCHAR(30) NOT NULL,
+                last_name VARCHAR(30) NOT NULL,
+                role_id INTEGER NOT NULL,
+                manager_id INTEGER,
+                FOREIGN KEY (role_id) REFERENCES role(id),
+                FOREIGN KEY (manager_id) REFERENCES employee(id)
+            );
+        `);
+        console.log('Tables created.');
+    } catch (error) {
+        console.error('Error creating tables:', error);
+        throw error;
+    } finally {
+        dbClient.release();
+    }
+};
+
+initializeDatabase().then(() => {
 const startApp = async () => {
     try {
         console.log(" .-------------------------------------------------------------------------------------------------.");
@@ -91,10 +161,13 @@ const startApp = async () => {
 
         // Restart application for more actions
         startApp();
-        
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
+            
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
-startApp();
+    startApp();
+}).catch(error => {
+    console.error('Error initializing database:', error);
+});

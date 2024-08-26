@@ -1,22 +1,30 @@
 const db = require('../config/db');
 
-const getAll = async (table) => {
-    const query = `SELECT * FROM ${table}`;
-    const result = await db.query(query);
-    return result.rows;
+const getAll = async (query) => {
+    try {
+        const result = await db.query(query);
+        return result.rows;
+    } catch (error) {
+        console.error('Error executing query:', error);
+        throw error; // Re-throw to handle upstream
+    }
 };
 
 const addItem = async (table, columns, values) => {
-    const query = `
-        INSERT INTO ${table} (${columns.join(', ')}) 
-        VALUES (${values.map((_, i) => `$${i + 1}`).join(', ')}) 
-        RETURNING *
-    `;
-    const result = await db.query(query, values);
-    return result.rows[0];
+    const columnNames = columns.join(', ');
+    const valuePlaceholders = values.map((_, index) => `$${index + 1}`).join(', ');
+    const query = `INSERT INTO ${table} (${columnNames}) VALUES (${valuePlaceholders}) RETURNING *`;
+
+    try {
+        const result = await db.query(query, values);
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error adding item:', error);
+        throw error; // Re-throw to handle upstream
+    }
 };
 
 module.exports = {
     getAll,
-    addItem,
+    addItem
 };
