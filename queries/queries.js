@@ -5,10 +5,11 @@ const getAll = async (query) => {
         const result = await db.query(query);
         return result.rows;
     } catch (error) {
-        console.error('Error executing query:', error);
-        throw error; // Re-throw to handle upstream
+        console.error('Error executing getAll query:', error);
+        throw error;
     }
 };
+
 
 const addItem = async (table, columns, values) => {
     const columnNames = columns.join(', ');

@@ -9,4 +9,4 @@ INSERT INTO role (title, salary, department_id) VALUES
 ('IT Support Technician', 70000, 1);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES 
-('Bob', 'Smith', 1, 1); 
+('Jill', 'Johnson', 7, 2); 

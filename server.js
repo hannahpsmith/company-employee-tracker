@@ -40,8 +40,13 @@ const initializeDatabase = async () => {
         port: process.env.DB_PORT,
     });
 
+
+    
     const dbClient = await dbPool.connect();
     try {
+
+    
+
         // Create tables
         await dbClient.query(`
             CREATE TABLE IF NOT EXISTS department (
