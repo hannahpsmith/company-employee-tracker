@@ -31,6 +31,8 @@ Use the arrow keys to navigate the menu and select an option. Follow the prompts
 
 A walkthrough video demonstrating the functionality of the Employee Tracker is available [here](https://drive.google.com/file/d/1K33tuzicUFzOMAfITBHw3fTBLUJsKdmB/view?usp=sharing)
 
+![this image shows a snip of the deployed application, with Tracker at the top and the list options below](./assets/images/tracker-snip.png)
+
 ## License
 This project is licensed under the MIT license. Please feel free to read the license in full detail [here](https://opensource.org/license/mit)
 
